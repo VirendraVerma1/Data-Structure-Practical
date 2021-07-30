@@ -20,6 +20,7 @@ public class SampleLinkedList : MonoBehaviour
 
     public SampleNode head;
 
+
     void Start()
     {
         SimpleLinkedListInitializeManually();
@@ -49,7 +50,16 @@ public class SampleLinkedList : MonoBehaviour
         print("Length = " + getLength());
         print("Recursive Length = " + getCountRec(head));
 
+        //manageMergeSort();
         //mergetwolinkedList();
+        removeDuplicates();
+        print("removing duplicates");
+        printList();
+
+        head=reverse(head,3);
+        head = reverse(head);
+        print("reverse list");
+        printList();
     }
 
     void printList()
@@ -59,7 +69,22 @@ public class SampleLinkedList : MonoBehaviour
         {
             print(n.data);
             n = n.next;
-        } 
+            
+        }
+    }
+
+    SampleNode tail()
+    {
+        if (head == null)
+            return null;
+        SampleNode n = head;
+        SampleNode t = null;
+        while (n.next != null)
+        {
+            n = n.next;
+        }
+        t = n;
+        return t;
     }
 
     void pushInFront(int data) //time complexity of new SampleNode is O(1) 
@@ -67,6 +92,11 @@ public class SampleLinkedList : MonoBehaviour
         SampleNode newSampleNode = new SampleNode(data);
         newSampleNode.next = head;
         head = newSampleNode;
+    }
+
+    SampleNode getInFront()
+    {
+        return head;
     }
 
     void insertAfter(SampleNode prev_SampleNode, int data)//complexity O(1) 
@@ -306,9 +336,151 @@ public class SampleLinkedList : MonoBehaviour
 
     #region merge sort
 
+    void manageMergeSort()
+    {
+        print("Merge sort");
+        SampleNode temp = head;
 
+        while (temp.next != null)
+        {
+            temp = temp.next;
+        }
+        SampleLinkedList newList = mergeSort(head, temp);
+
+        SampleNode tempp = newList.head;
+        while (tempp != null)
+        {
+            print(tempp.data);
+            tempp = tempp.next;
+        }
+        head = newList.head;
+        print("merge sort end");
+    }
+
+    SampleLinkedList mergeSort(SampleNode head,SampleNode tail)
+    {
+        if(head==tail)
+        {
+            SampleLinkedList lr = new SampleLinkedList();
+            lr.append(head.data);
+            return lr;
+        }
+
+        SampleNode mid = midNode(head, tail);
+        SampleLinkedList fsh = mergeSort(head, mid);
+        SampleLinkedList ssh = mergeSort(mid.next, tail);
+        SampleLinkedList cl = mergeTwoSortedLists(fsh, ssh);
+        return cl;
+    }
+
+    SampleNode midNode(SampleNode head,SampleNode tail)
+    {
+        SampleNode f = head;
+        SampleNode s = head;
+
+        while (f != tail&&f.next != tail)
+        {
+            f = f.next.next;
+            s = s.next;
+        }
+
+        return s;
+    }
+
+    SampleLinkedList mergeTwoSortedLists(SampleLinkedList l1, SampleLinkedList l2)
+    {
+        SampleNode one = l1.head;
+        SampleNode two = l2.head;
+
+        SampleLinkedList res = new SampleLinkedList();
+        while(one!=null && two!=null)
+        {
+            if(one.data<two.data)
+            {
+                res.append(one.data);
+                one = one.next;
+            }
+            else
+            {
+                res.append(two.data);
+                two = two.next;
+            }
+        }
+
+        while (one != null)
+        {
+            res.append(one.data);
+            one = one.next;
+        }
+
+        while(two!=null)
+        {
+            res.append(two.data);
+            two = two.next;
+        }
+
+        return res;
+    }
 
     #endregion
+
+    void removeDuplicates()
+    {
+        manageMergeSort();
+        SampleLinkedList res = new SampleLinkedList();
+
+        while(this.getLength()>0)
+        {
+            int val = this.getInFront().data;
+            this.deleteusingposition(0);
+
+            if(res.tail()==null)
+            {
+                res.append(val);
+            }
+            else if(this.getLength()==0 || res.tail().data!=val)
+            {
+                res.append(val);
+            }
+        }
+
+        this.head = res.head;
+    }
+
+    SampleNode reverse(SampleNode head, int k=0)
+    {
+        if (k == 0)
+            k = getLength();
+
+        if (head == null)
+            return null;
+        SampleNode current = head;
+        SampleNode next = null;
+        SampleNode prev = null;
+
+        int count = 0;
+
+        /* Reverse first k nodes of linked list */
+        while (count < k && current != null)
+        {
+            next = current.next;
+            current.next = prev;
+            prev = current;
+            current = next;
+            count++;
+        }
+
+        /* next is now a pointer to (k+1)th node
+            Recursively call for the list starting from
+           current. And make rest of the list as next of
+           first node */
+        if (next != null)
+            head.next = reverse(next, k);
+
+        // prev is now head of input list
+        return prev;
+    }
+
 }
 
 
