@@ -137,8 +137,6 @@ public class LinkedList : MonoBehaviour
         return numberr;
     }
 
-
-
 }
 
 public class SimpleNode  //node class
